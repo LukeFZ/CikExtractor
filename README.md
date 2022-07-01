@@ -2,6 +2,10 @@
 
 *Utility to dump stored packed CIK (Content Integrity Key) data for MSIXVC packages from the registry. Additionally leverages emulation to derive your device encryption key to decrypt the CIKs for normal usage.*
 
+## Disclaimer
+
+**Warning: All keys derived and decrypted by this tool are sensitive information. You should never share a derived key with anyone, especially not your unique device key. This tool is for educational and research purposes only.**
+
 ## Requirements
 
 - Windows 10+
