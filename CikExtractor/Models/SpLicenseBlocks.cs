@@ -1,0 +1,30 @@
+﻿namespace CikExtractor.Models;
+
+public enum SpLicenseBlocks
+{
+    UnkBlock0 = 0x14,
+    DeviceLicenseExpirationTime = 0x1f,
+    PollingTime = 0xd3,
+    LicenseExpirationTime = 0x20,
+    ClepSignState = 0x12d,
+    LicenseDeviceId = 0xd2,
+    UnkBlock1 = 0xd1,
+    LicenseId = 0xcb,
+    HardwareId = 0xd0,
+    UnkBlock2 = 0xcf,
+    UplinkKeyId = 0x18,
+    UnkBlock3 = 0x0,
+    UnkBlock4 = 0x12e,
+    UnkBlock5 = 0xd5,
+    PackageFullName = 0xce,
+    LicenseInformation = 0xc9,
+    PackedContentKeys = 0xca,
+    EncryptedDeviceKey = 0x1,
+    DeviceLicenseDeviceId = 0x2,
+    LicenseEntryIds = 0xcd,
+    LicensePolicies = 0xd4,
+    KeyholderPublicSigningKey = 0xdc,
+    KeyholderPolicies = 0xdd,
+    KeyholderKeyLicenseId = 0xde,
+    SignatureBlock = 0xcc,
+}
