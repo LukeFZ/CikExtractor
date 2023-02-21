@@ -27,6 +27,12 @@ internal static class DeviceKeyDumper
     private const string RegistryPath = $"{EmulationDir}/x8664_windows/Windows/registry";
     private const string CommandTemplate = "clep_vault.py --license \"{0}\" --smbios \"{1}\" --driveser \"{2}\"";
 
+    private const string BaseHiveName = "HKLM";
+    private const string DefaultUserHive = @"C:\Users\Default\NTUSER.DAT";
+    private static readonly string[] HiveNames = {
+        "SYSTEM", "SECURITY", "SOFTWARE", "HARDWARE", "SAM"
+    };
+
     private static byte[]? DeriveDeviceKey(byte[] smbios, byte[] driveSerial, byte[] encryptedLicense)
     {
         var kernelPath = Path.Join(Directory.GetCurrentDirectory(), System32Dir, KernelFilename);
@@ -40,7 +46,13 @@ internal static class DeviceKeyDumper
             File.Copy(DllSourcePath, DllTargetPath);
 
         if (!Directory.Exists(RegistryPath))
+        {
             Directory.CreateDirectory(RegistryPath);
+            foreach (var hive in HiveNames)
+                RegistryInterface.ExportRegistryHive($"{BaseHiveName}\\{hive}", Path.Join(RegistryPath, hive));
+
+            File.Copy(DefaultUserHive, Path.Join(RegistryPath, "NTUSER.DAT"));
+        }
 
         var smbiosB64 = Convert.ToBase64String(smbios);
         var driveB64 = Convert.ToBase64String(driveSerial);

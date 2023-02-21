@@ -11,6 +11,8 @@ internal static class RegistryInterface
     private const string ExportRegFilename = "control_export.reghive";
     private const string RegistryExportCommand = $"save {ControlRegKey} \"{{0}}/{ExportRegFilename}\" /Y";
 
+    private const string ExportCommand = "save {0} \"{1}\" /Y";
+
     // Registry Constants
     private const string RootClipStoragePath = @"{7746D80F-97E0-4E26-9543-26B41FC22F79}";
     private const string LicenseContentKeyIdStorage = $"{RootClipStoragePath}\\{{D73E01AC-F5A0-4D80-928B-33C1920C38BA}}";
@@ -21,14 +23,14 @@ internal static class RegistryInterface
 
     private static RegistryHive? _loadedRegistry;
 
-    private static void ExportSystemRegistryHive()
+    public static void ExportRegistryHive(string hiveName, string outputPath)
     {
         using var process = new Process();
         process.StartInfo.Verb = "runas";
         process.StartInfo.FileName = RegExe;
         process.StartInfo.CreateNoWindow = true;
         process.StartInfo.UseShellExecute = true;
-        process.StartInfo.Arguments = string.Format(RegistryExportCommand, Directory.GetCurrentDirectory());
+        process.StartInfo.Arguments = string.Format(ExportCommand, hiveName, outputPath);
 
         process.Start();
         process.WaitForExit();
@@ -37,7 +39,7 @@ internal static class RegistryInterface
     public static List<SpLicense> ParseRegistry()
     {
         if (!File.Exists(ExportRegFilename))
-            ExportSystemRegistryHive();
+            ExportRegistryHive(ControlRegKey, Path.Join(Directory.GetCurrentDirectory(), ExportRegFilename));
 
         _loadedRegistry = new RegistryHive(ExportRegFilename) {RecoverDeleted = false};
         _loadedRegistry.ParseHive();

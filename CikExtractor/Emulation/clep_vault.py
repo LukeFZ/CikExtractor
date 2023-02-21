@@ -81,8 +81,12 @@ if __name__ == '__main__':
 	ql.mem.write(req_debuggerEnabled, struct.pack("<I", 0x7ffe02d4))
 	ql.mem.write(req_debuggerAttached, struct.pack("<I", 0x7ffe02d4))
 
-	ql.mem.map(0x7ffe02d4 // 4096*4096, 4096)
-	ql.mem.write(0x7ffe02d4, struct.pack("<I", 0x00000010)) # 0x0 - Debugger not enabled | 0x10 - Debugger not attached
+	try:
+		ql.os.KUSER_SHARED_DATA
+	except:
+		# We are running in a Qiling version that does not have KUSER_SHARED_DATA, set debugger var manually
+		ql.mem.map(0x7ffe02d4 // 4096*4096, 4096)
+		ql.mem.write(0x7ffe02d4, struct.pack("<I", 0x00000010)) # 0x0 - Debugger not enabled | 0x10 - Debugger not attached
 
 	pb_secret = ql.os.heap.alloc(32)
 	license_buffer = ql.os.heap.alloc(len(encrypted_device_license))
