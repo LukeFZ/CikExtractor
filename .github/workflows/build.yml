@@ -26,7 +26,7 @@ jobs:
         run: dotnet restore -r ${{ matrix.rid }}
       - name: Publish
         run: | 
-           dotnet publish CikExtractor/CIKExtractor.csproj -c Release --no-restore -o ./${{ matrix.rid }} -r ${{ matrix.rid }} --no-self-contained
+           dotnet publish CikExtractor/CikExtractor.csproj -c Release --no-restore -o ./${{ matrix.rid }} -r ${{ matrix.rid }} --no-self-contained
            zip -r ${{ matrix.rid }}.zip ./${{ matrix.rid }}/*
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
