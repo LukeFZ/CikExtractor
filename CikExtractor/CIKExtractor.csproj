@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,20 +8,37 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PInvoke.BCrypt" Version="0.7.104" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
-    <PackageReference Include="Registry" Version="1.3.3.2" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
+    <PackageReference Include="Registry" Version="1.3.4" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.47.1-preview.0.11" />
     <PackageReference Include="System.Management" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\" />
-    <Folder Include="Emulation\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Emulation\clep_vault.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Emulation\x8664_windows\Windows\registry\HARDWARE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Emulation\x8664_windows\Windows\registry\NTUSER.DAT">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Emulation\x8664_windows\Windows\registry\SAM">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Emulation\x8664_windows\Windows\registry\SECURITY">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Emulation\x8664_windows\Windows\registry\SOFTWARE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Emulation\x8664_windows\Windows\registry\SYSTEM">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

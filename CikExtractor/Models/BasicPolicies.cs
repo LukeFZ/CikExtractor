@@ -1,17 +1,10 @@
 ﻿namespace CikExtractor.Models;
 
-public class BasicPolicies
+[Flags]
+public enum BasicPolicies : ushort
 {
-    public bool LeaseRequired;
-    public bool IsPrimary;
-    public bool Expired;
-    public bool IsUnlock;
-
-    public BasicPolicies(ushort packed)
-    {
-        LeaseRequired = (packed & 1) == 1;
-        IsPrimary = (packed & 2) == 1;
-        Expired = (packed & 4) == 1;
-        IsUnlock = (packed & 8) == 1;
-    }
+    LeaseRequired = 1 << 0,
+    IsPrimary = 1 << 1,
+    Expired = 1 << 2,
+    IsUnlock = 1 << 3
 }

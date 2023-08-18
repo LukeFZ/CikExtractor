@@ -1,0 +1,51 @@
+name: build
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '6.0.x' ]
+        rid: ['win-x64']
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore -r ${{ matrix.rid }}
+      - name: Publish
+        run: | 
+           dotnet publish CikExtractor/CIKExtractor.csproj -c Release --no-restore -o ./${{ matrix.rid }} -r ${{ matrix.rid }} --no-self-contained
+           zip -r ${{ matrix.rid }}.zip ./${{ matrix.rid }}/*
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+           name: ${{ matrix.rid }}.zip
+           path: ./${{ matrix.rid }}.zip
+
+  make-release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts/
+      - name: Make release
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          files: ./artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

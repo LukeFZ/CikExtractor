@@ -44,7 +44,6 @@ public class SpLicense
         while (reader.BaseStream.Position != reader.BaseStream.Length)
         {
             var blockId = (SpLicenseBlocks) reader.ReadInt32();
-            //Console.WriteLine(blockId);
 
             var blockLength = reader.ReadInt32();
 
@@ -115,7 +114,7 @@ public class SpLicense
                     LicenseVersion = reader.ReadUInt16();
                     LicenseType = (LicenseType) reader.ReadUInt16();
                     IssuedTime = DateTimeOffset.FromUnixTimeSeconds(reader.ReadInt32());
-                    BasicPolicies = new BasicPolicies(reader.ReadUInt16()); // BasicPolicies
+                    BasicPolicies = (BasicPolicies) reader.ReadUInt16();
                     break;
 
                 case SpLicenseBlocks.LicenseEntryIds:
@@ -150,7 +149,7 @@ public class SpLicense
                 case SpLicenseBlocks.UnkBlock4:
                 case SpLicenseBlocks.UnkBlock5:
                 default:
-                    Console.WriteLine($"Parsing block id {blockId} is not implemented.");
+                    Console.WriteLine($"Parsing block id {blockId} ({blockId:X}) is not implemented.");
                     reader.BaseStream.Seek(blockLength, SeekOrigin.Current);
                     break;
             }
