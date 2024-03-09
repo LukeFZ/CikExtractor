@@ -129,44 +129,29 @@ internal sealed class DumpCommand : Command<DumpCommand.Settings>
         var cikFolderPath = Path.GetFullPath(settings.CikExtractionFolder);
         Directory.CreateDirectory(cikFolderPath);
 
-        var packageTable = new Table()
-            .Title("Packages")
-            .AddColumns(
-                new TableColumn("Package Name"),
-                new TableColumn("License Type"),
-                new TableColumn("Keys")
-            )
-            .RoundedBorder()
-            .Expand();
-
-        foreach (var license in manager.Licenses.Where(x => x.PackedContentKeys.Count > 0))
+        var tree = new Tree(":post_office:");
+        foreach (var license in manager.Licenses.Where(x => x.PackedContentKeys.Count != 0))
         {
-            var keysTable = new Table()
-                .AddColumns(
-                    new TableColumn("Key Id"),
-                    new TableColumn("Key")
-                )
-                .RoundedBorder()
-                .Expand();
+            var packageNode = tree.AddNode($":package: [blue]{license.PackageName}[/]");
+            packageNode.AddNode($"[white bold]License Type[/]: [green bold]{license.LicenseType}[/]");
 
             foreach (var pair in license.PackedContentKeys)
             {
                 var contentKey = Crypto.DecryptContentKey(deviceKey, pair.Value);
-
                 var filePath = Path.Join(cikFolderPath, $"{pair.Key}.cik");
 
-                File.WriteAllBytes(filePath, 
-                    pair.Key.ToByteArray()
+                File.WriteAllBytes(filePath,
+                    pair.Key
+                        .ToByteArray()
                         .Concat(contentKey)
                         .ToArray());
 
-                keysTable.AddRow(pair.Key.ToString(), Convert.ToHexString(contentKey));
+                var keyNode = packageNode.AddNode($":key: [blue]{pair.Key}[/]");
+                keyNode.AddNode($"[white bold]Key[/]: [green bold]{Convert.ToHexString(contentKey)}[/]");
             }
-
-            packageTable.AddRow(new Text(license.PackageName), new Text(license.LicenseType.ToString()), keysTable);
         }
 
-        AnsiConsole.Write(packageTable);
+        AnsiConsole.Write(tree);
 
         return 0;
     }
