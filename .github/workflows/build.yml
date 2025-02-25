@@ -17,9 +17,9 @@ jobs:
         rid: ['win-x64']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup .NET SDK ${{ matrix.dotnet-version }}
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Install dependencies
@@ -29,7 +29,7 @@ jobs:
            dotnet publish CikExtractor/CikExtractor.csproj -c Release --no-restore -o ./${{ matrix.rid }} -r ${{ matrix.rid }} --no-self-contained
            zip -r ${{ matrix.rid }}.zip ./${{ matrix.rid }}/*
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
            name: ${{ matrix.rid }}.zip
            path: ./${{ matrix.rid }}.zip
@@ -40,12 +40,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ./artifacts/
       - name: Make release
-        uses: softprops/action-gh-release@v0.1.14
+        uses: softprops/action-gh-release@v2
         with:
           files: ./artifacts/**/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
