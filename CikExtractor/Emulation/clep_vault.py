@@ -56,12 +56,15 @@ if __name__ == "__main__":
 
     ql = Qiling(["./clipsp.sys"], ".\\x8664_windows", libcache=True, console=False)
 
+    driver_address_space_min = 0x180000000 # 0x1C0000000 for older drivers
+    driver_address_space_max = 0x1D0000000
+
     ql.os.set_api("__chkstk", hook_chkstk)
 
     clep_vault_func_pattern = b"\x4c\x8b\xdc\x49\x89\x4b\x08"
     clep_vault_size = 0x4E
     clep_vault_func = ql.mem.search(
-        clep_vault_func_pattern, begin=0x1C0000000, end=0x1D0000000
+        clep_vault_func_pattern, begin=driver_address_space_min, end=driver_address_space_max
     )[0]
     if clep_vault_func is None:
         print("Error: Failed to find vault function using pattern.")
@@ -82,7 +85,7 @@ if __name__ == "__main__":
     clep_request_ptr = 0
 
     for pattern, offset in patterns_to_try:
-        results = ql.mem.search(pattern, begin=0x1C0000000, end=0x1D0000000)
+        results = ql.mem.search(pattern, begin=driver_address_space_min, end=driver_address_space_max)
         if len(results) == 0:
             continue
 
