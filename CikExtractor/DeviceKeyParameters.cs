@@ -51,6 +51,12 @@ internal record DeviceKeyParameters(byte[] Smbios, byte[] DriveSerial, byte[] En
 
     private static byte[]? DumpSmbios()
     {
+        if (!OperatingSystem.IsWindows())
+        {
+            ConsoleLogger.WriteErrLine("SMBIOS dumping is only supported on Windows.");
+            return null;
+        }
+
         var mgmtScope = new ManagementScope(@"\\localhost\root\WMI");
         mgmtScope.Connect();
 
@@ -113,7 +119,15 @@ internal record DeviceKeyParameters(byte[] Smbios, byte[] DriveSerial, byte[] En
     //Technically, this is also used for deriving/decrypting the device key. But testing showed that is not actually used, at least in all cases I've observed.
     private static byte[]? DumpDriveSerial()
     {
-        var searcher = new ManagementObjectSearcher(@"SELECT * FROM Win32_DiskDrive WHERE DeviceID = ""\\\\.\\PHYSICALDRIVE0""");
+        if (!OperatingSystem.IsWindows())
+        {
+            ConsoleLogger.WriteErrLine("Drive serial dumping is only supported on Windows.");
+            return null;
+        }
+
+        var searcher = new ManagementObjectSearcher("""
+                                                    SELECT * FROM Win32_DiskDrive WHERE DeviceID = "\\\\.\\PHYSICALDRIVE0"
+                                                    """);
 
         foreach (var entry in searcher.Get())
         {
