@@ -9,7 +9,7 @@
 ## Requirements
 
 - Windows 10+
-- [.NET 6.0.x](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed
+- [.NET 8.0.x](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) installed
 - Python 3 added to your PATH, along with the **[Qiling](https://github.com/qilingframework/qiling)** package installed
 - Administrator privileges (for dumping the required registry keys)
 
