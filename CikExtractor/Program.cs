@@ -137,17 +137,24 @@ internal sealed class DumpCommand : Command<DumpCommand.Settings>
 
             foreach (var pair in license.PackedContentKeys)
             {
-                var contentKey = Crypto.DecryptContentKey(deviceKey, pair.Value);
-                var filePath = Path.Join(cikFolderPath, $"{pair.Key}.cik");
+                try
+                {
+                    var contentKey = Crypto.DecryptContentKey(deviceKey, pair.Value);
+                    var filePath = Path.Join(cikFolderPath, $"{pair.Key}.cik");
 
-                File.WriteAllBytes(filePath,
-                    pair.Key
-                        .ToByteArray()
-                        .Concat(contentKey)
-                        .ToArray());
+                    File.WriteAllBytes(filePath,
+                        pair.Key
+                            .ToByteArray()
+                            .Concat(contentKey)
+                            .ToArray());
 
-                var keyNode = packageNode.AddNode($":key: [blue]{pair.Key}[/]");
-                keyNode.AddNode($"[white bold]Key[/]: [green bold]{Convert.ToHexString(contentKey)}[/]");
+                    var keyNode = packageNode.AddNode($":key: [blue]{pair.Key}[/]");
+                    keyNode.AddNode($"[white bold]Key[/]: [green bold]{Convert.ToHexString(contentKey)}[/]");
+                } catch (Exception ex)
+                {
+                    var keyNode = packageNode.AddNode($":key: [blue]{pair.Key}[/]");
+                    keyNode.AddNode($"[red bold]Error[/]: [green bold]{ex.Message}[/]");
+                }
             }
         }
 
