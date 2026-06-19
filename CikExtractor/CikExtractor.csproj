@@ -18,28 +18,4 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Emulation\clep_vault.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Emulation\x8664_windows\Windows\registry\HARDWARE">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Emulation\x8664_windows\Windows\registry\NTUSER.DAT">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Emulation\x8664_windows\Windows\registry\SAM">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Emulation\x8664_windows\Windows\registry\SECURITY">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Emulation\x8664_windows\Windows\registry\SOFTWARE">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Emulation\x8664_windows\Windows\registry\SYSTEM">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

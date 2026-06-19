@@ -1,52 +1,38 @@
-﻿using System.Diagnostics;
+﻿using System.Buffers.Binary;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace CikExtractor;
 
 internal static class DeviceKeyDumper
 {
-    private const string Python = "python";
-    private const string ErrorPrefix = "Error";
-
-    private const string EmulationDir = "Emulation";
-
-    private const string DllName = "clipsp.sys";
-    private const string DllTargetPath = $"{EmulationDir}/{DllName}";
-    private const string DllSourcePath = $"C:/Windows/System32/drivers/{DllName}";
-
-    private const string KernelName = "ntoskrnl.exe";
-    private const string KernelSourcePath = $"C:/Windows/System32/{KernelName}";
-    private const string KernelTargetDirectory = $"{EmulationDir}/x8664_windows/Windows/System32";
-    private const string KernelTargetPath = $"{KernelTargetDirectory}/{KernelName}";
-
-    public static byte[]? DeriveDeviceKey(DeviceKeyParameters parameters)
+    public static byte[] DeriveDeviceKey(DeviceKeyParameters parameters)
     {
-        if (!File.Exists(KernelTargetPath))
-        {
-            Directory.CreateDirectory(KernelTargetDirectory);
-            File.Copy(KernelSourcePath, KernelTargetPath);
-        }
+        // :)
 
-        if (!File.Exists(DllTargetPath))
-            File.Copy(DllSourcePath, DllTargetPath);
+        if (BinaryPrimitives.ReadUInt32LittleEndian(parameters.EncryptedLicense) != 4)
+            throw new InvalidOperationException("Only version 4 device licenses are supported.");
 
-        using var process = new Process();
-        process.StartInfo.FileName = Python;
-        process.StartInfo.CreateNoWindow = false;
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.Arguments = parameters.ToCommand();
-        process.StartInfo.WorkingDirectory = Path.GetFullPath(EmulationDir);
+        var encryptedDecryptionKeySchedule = parameters.EncryptedLicense.AsSpan(0x4, 0xe4);
+        var encryptedRoundKeys = MemoryMarshal.Cast<byte, uint>(encryptedDecryptionKeySchedule);
+        var encryptedDeviceKey = parameters.EncryptedLicense.AsSpan(0x204, 0x10);
 
-        process.Start();
-        process.WaitForExit();
+        var decryptionKey = (stackalloc byte[16]);
+        var decryptionKeyInts = MemoryMarshal.Cast<byte, uint>(decryptionKey);
 
-        var deviceKey = process.StandardOutput.ReadLine()!.Trim();
+        decryptionKeyInts[0] = encryptedRoundKeys[46] ^ encryptedRoundKeys[56] ^ 0xE20DF371 ^ 0xCCB22FE6;
+        decryptionKeyInts[1] = encryptedRoundKeys[36] ^ encryptedRoundKeys[47] ^ 0xDF080E39;
+        decryptionKeyInts[2] = encryptedRoundKeys[40] ^ encryptedRoundKeys[51] ^ 0x6D09B2F5 ^ 0x2AE17AB9;
+        decryptionKeyInts[3] = encryptedRoundKeys[30] ^ encryptedRoundKeys[41] ^ 0x37288CEC;
 
-        if (deviceKey.Contains(ErrorPrefix))
-        {
-            Console.WriteLine(deviceKey);
-            return null;
-        }
+        var aes = Aes.Create();
+        aes.Key = decryptionKey.ToArray();
+        var deviceKey = aes.DecryptEcb(encryptedDeviceKey, PaddingMode.None);
 
-        return Convert.FromHexString(deviceKey.Trim());
+        // We could just skip decryption and use the key directly, but this serves as a nice sanity check
+        if (!decryptionKey.SequenceEqual(deviceKey))
+            throw new InvalidOperationException("Failed to decrypt device key.");
+
+        return deviceKey;
     }
 }
