@@ -8,9 +8,7 @@
 
 ## Requirements
 
-- Windows 10+
-- [.NET 8.0.x](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) installed
-- Python 3 added to your PATH, along with the **[Qiling](https://github.com/qilingframework/qiling)** package installed
+- [.NET 10.0.x](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed
 - Administrator privileges (for dumping the required registry keys)
 
 ## Usage
@@ -64,7 +62,7 @@ You can also use the derived device key to decrypt local XML licenses that conta
 - [XvddKeyslotUtil](https://github.com/billyhulbert/XvddKeyslotUtil), by billyhulbert
 	- Inspired me to also look into how Windows handles CIKs and their storage/derivation.
 - [Information about SystemPolicyInfo](https://github.com/KiFilterFiberContext/windows-software-policy), by KiFilterFiberContext
-	- Their findings helped me to better understand the licensing flow and how all of the different parts work together, and their unpacking script inspired me to also use Qiling for the vault emulation.
+	- Their findings helped me to better understand the licensing flow and how all of the different parts work together, and their unpacking script inspired me to also use Qiling for the vault emulation when it was still needed.
 - [xvdtool](https://github.com/emoose/xvdtool) and [this SPLicenseBlock struct](https://github.com/emoose/xbox-reversing/blob/master/templates/SPLicenseBlock.bt), both by emoose & tuxuser
 - 
 
